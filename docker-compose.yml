@@ -1,0 +1,30 @@
+version: '3'
+services:
+    php-apache:
+        build:
+            context: ./php
+        ports:
+            - 8080:80
+        volumes:
+            - ./web:/var/www/html
+            - ./apache/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./apache/docker-php-ext-opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+            - ./apache/php.ini:/usr/local/etc/php/php.ini
+            - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
+        links:
+            - 'mariadb'
+    mariadb:
+        image: mariadb:10.1
+        ports:
+            - 8083:3306
+        volumes:
+            - mariadb:/var/lib/mysql
+        environment:
+            TZ: "Europe/Madrid"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+            MYSQL_ROOT_PASSWORD: "mysql_root_password"
+            MYSQL_USER: 'mysql_suser'
+            MYSQL_PASSWORD: 'mysql_password'
+            MYSQL_DATABASE: 'mysql_database'
+volumes:
+    mariadb:
